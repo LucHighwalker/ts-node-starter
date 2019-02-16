@@ -4,14 +4,15 @@ import { IUser } from '../interfaces/user';
 
 import { genSalt, hash, compare } from 'bcrypt';
 
-export interface UserModel extends IUser, Doc, Document {
-  comparePassword(): boolean;
+export interface IUserModel extends IUser, Doc, Document {
+  comparePassword(password: string): boolean;
 }
 
 export const UserSchema: Schema = new Schema({
   email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   password: {
     type: String,
@@ -27,7 +28,7 @@ export const UserSchema: Schema = new Schema({
   }
 });
 
-UserSchema.pre('save', function(this: UserModel, next: HookNextFunction) {
+UserSchema.pre('save', function(this: IUserModel, next: HookNextFunction) {
   const now = new Date();
   this.updatedAt = now;
   if (!this.createdAt) {
@@ -37,12 +38,12 @@ UserSchema.pre('save', function(this: UserModel, next: HookNextFunction) {
   if (!this.isModified('password')) {
     next();
   } else {
-    genSalt(10, (error: Error, salt: string) => {
-      if (error) {
+    genSalt(10, (err: Error, salt: string) => {
+      if (err) {
         next();
       }
-      hash(this.password, salt, (error: Error, hash: string) => {
-        if (error) {
+      hash(this.password, salt, (err: Error, hash: string) => {
+        if (err) {
           next();
         }
         this.password = hash;
@@ -52,18 +53,18 @@ UserSchema.pre('save', function(this: UserModel, next: HookNextFunction) {
   }
 });
 
-UserSchema.methods.comparePassword = function(password: string): boolean {
-  let match = false;
-  compare(password, this.password, (error, isMatch) => {
-    if (error) {
-      match = false;
-    } else {
-      match = isMatch;
-    }
+UserSchema.methods.comparePassword = async function(password: string): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    compare(password, this.password, (err: Error, isMatch: boolean) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(isMatch);
+      }
+    });
   });
-  return match;
 };
 
-const UserModel: Model<UserModel> = model<UserModel>('User', UserSchema);
+const UserModel: Model<IUserModel> = model<IUserModel>('User', UserSchema);
 
 export default UserModel;
