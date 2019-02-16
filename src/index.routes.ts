@@ -1,5 +1,7 @@
 import * as express from 'express'
 
+import Auth from './auth/auth.routes';
+
 class Routes {
   public express
 
@@ -9,13 +11,8 @@ class Routes {
   }
 
   private mountRoutes (): void {
-    const router = express.Router()
-    router.get('/', (req, res) => {
-      res.json({
-        message: 'Hello World!'
-      })
-    })
-    this.express.use('/', router)
+    const auth = new Auth().router;
+    this.express.use('/auth', auth);
   }
 }
 
