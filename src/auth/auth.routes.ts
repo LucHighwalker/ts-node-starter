@@ -2,8 +2,6 @@ import * as express from 'express';
 
 import Controller from './auth.controller';
 
-import User from '../models/user';
-
 class Auth {
   public router: express.Router;
 
@@ -12,15 +10,18 @@ class Auth {
 
     this.router.route('/');
 
-    this.router.post('/signup', (req, res) => {
-      const body = req.body;
-      console.log('body; ', body);
-      const user = new User(body);
-      user.save().then(() => {
-        res.json({
+    this.router.post('/signup', async (req, res) => {
+      try {
+        const body = req.body;
+        const user = await Controller.saveUser(body);
+        res.status(200).json({
           user
+        })
+      } catch (error) {
+        res.status(401).json({
+          error: error.message
         });
-      });
+      }
     });
   }
 }
