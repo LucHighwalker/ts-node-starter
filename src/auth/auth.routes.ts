@@ -1,24 +1,28 @@
 import * as express from 'express';
 
-import AuthController from './auth.controller';
+import Controller from './auth.controller';
+
+import User from '../models/user';
 
 class Auth {
-    public router: express.Router;
+  public router: express.Router;
 
-    constructor () {
-        const controller = new AuthController();
+  constructor() {
+    this.router = express.Router();
 
-        this.router = express.Router();
+    this.router.route('/');
 
-        this.router.route('/');
-
-        this.router.get('/', (req, res) => {
-            const response = controller.testResponse();
-            res.json({
-                response
-            });
+    this.router.post('/signup', (req, res) => {
+      const body = req.body;
+      console.log('body; ', body);
+      const user = new User(body);
+      user.save().then(() => {
+        res.json({
+          user
         });
-    }
+      });
+    });
+  }
 }
 
 export default new Auth().router;

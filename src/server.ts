@@ -1,14 +1,16 @@
 import * as express from 'express';
 import * as mongoose from 'mongoose';
+import * as bodyParser from 'body-parser';
 
 import Auth from './auth/auth.routes';
 
-class App {
-  public express;
+class Server {
+  public server;
 
   constructor() {
-    this.express = express();
+    this.server = express();
     this.connectDb();
+    this.applyMiddleware();
     this.mountRoutes();
   }
 
@@ -22,9 +24,14 @@ class App {
     db.on('error', console.error.bind(console, 'MongoDB Connection error'));
   }
 
+  private applyMiddleware(): void {
+    this.server.use(bodyParser.json());
+    this.server.use(bodyParser.urlencoded({ extended: true }));
+  }
+
   private mountRoutes(): void {
-    this.express.use('/auth', Auth);
+    this.server.use('/auth', Auth);
   }
 }
 
-export default new App().express;
+export default new Server().server;
