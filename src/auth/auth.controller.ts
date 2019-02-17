@@ -1,15 +1,10 @@
 import * as jwt from 'jsonwebtoken';
 
+import Mailer from '../mailer/mailer.controller';
+
 import User, { IUserModel } from '../models/user';
 import { IUser } from '../interfaces/user';
-
-export interface AuthResponse {
-  token?: string;
-  user: {
-    _id: string;
-    email: string;
-  };
-}
+import { AuthResponse } from '../interfaces/auth';
 
 class AuthController {
   private generateToken(user: IUserModel): AuthResponse {
@@ -58,8 +53,16 @@ class AuthController {
         if (err) {
           reject(err);
         } else {
-          const resp = this.generateToken(user);
-          resolve(resp);
+          Mailer.sendEmail()
+            .then(info => {
+              const resp = this.generateToken(user);
+              resolve(resp);
+            })
+            .catch(err => {
+              reject(err);
+            });
+          // const resp = this.generateToken(user);
+          // resolve(resp);
         }
       });
     });
