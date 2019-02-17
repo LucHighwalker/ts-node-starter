@@ -45,10 +45,10 @@ class AuthController {
               _id: user._id,
               email: user.email
             }
-          })
+          });
         }
       });
-    })
+    });
   }
 
   public async signup(body: IUser): Promise<AuthResponse> {

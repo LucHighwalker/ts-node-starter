@@ -53,11 +53,13 @@ UserSchema.pre('save', function(this: IUserModel, next: HookNextFunction) {
   }
 });
 
-UserSchema.methods.comparePassword = async function(password: string): Promise<boolean> {
+UserSchema.methods.comparePassword = async function(
+  password: string
+): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     compare(password, this.password, (err: Error, isMatch: boolean) => {
       if (err) {
-        reject(err)
+        reject(err);
       } else {
         resolve(isMatch);
       }

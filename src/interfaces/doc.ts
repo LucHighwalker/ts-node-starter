@@ -1,4 +1,4 @@
 export interface Doc {
-    createdAt: Date;
-    updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
