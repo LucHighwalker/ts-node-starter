@@ -1,6 +1,6 @@
 import * as express from 'express';
 
-import Controller from './auth.controller';
+import auth from './auth.controller';
 
 class Auth {
   public router: express.Router;
@@ -10,15 +10,29 @@ class Auth {
 
     this.router.route('/');
 
-    this.router.post('/signup', async (req, res) => {
+    this.router.get('/user', async (req, res) => {
       try {
-        const body = req.body;
-        const resp = await Controller.signup(body);
+        const token = req.get('token');
+        const resp = await auth.getUser(token);
         res.status(200).json({
           resp
         });
       } catch (error) {
-        res.status(401).json({
+        res.status(400).json({
+          error: error.message
+        });
+      }
+    });
+
+    this.router.post('/signup', async (req, res) => {
+      try {
+        const body = req.body;
+        const resp = await auth.signup(body);
+        res.status(200).json({
+          resp
+        });
+      } catch (error) {
+        res.status(400).json({
           error: error.message
         });
       }
@@ -27,7 +41,7 @@ class Auth {
     this.router.post('/login', async (req, res) => {
       try {
         const { email, password } = req.body;
-        const resp = await Controller.login(email, password);
+        const resp = await auth.login(email, password);
         res.status(200).json({
           resp
         });

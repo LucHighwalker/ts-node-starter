@@ -4,7 +4,7 @@ import User, { IUserModel } from '../models/user';
 import { IUser } from '../interfaces/user';
 
 export interface AuthResponse {
-  token: string;
+  token?: string;
   user: {
     _id: string;
     email: string;
@@ -12,7 +12,7 @@ export interface AuthResponse {
 }
 
 class AuthController {
-  private generateResponse(user: IUserModel): AuthResponse {
+  private generateToken(user: IUserModel): AuthResponse {
     const token = jwt.sign(
       {
         _id: user._id
@@ -32,21 +32,40 @@ class AuthController {
     };
   }
 
-  public async signup(body: IUser) {
+  public async getUser(token: string): Promise<AuthResponse> {
+    return new Promise<AuthResponse>((resolve, reject) => {
+      const decodedToken: any = jwt.decode(token);
+      const id = decodedToken._id;
+      User.findById(id, (err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            user: {
+              _id: user._id,
+              email: user.email
+            }
+          })
+        }
+      });
+    })
+  }
+
+  public async signup(body: IUser): Promise<AuthResponse> {
     return new Promise<AuthResponse>((resolve, reject) => {
       const newUser = new User(body);
       newUser.save((err: Error, user: IUserModel) => {
         if (err) {
           reject(err);
         } else {
-          const resp = this.generateResponse(user);
+          const resp = this.generateToken(user);
           resolve(resp);
         }
       });
     });
   }
 
-  public async login(email: string, password: string) {
+  public async login(email: string, password: string): Promise<AuthResponse> {
     return new Promise<AuthResponse>((resolve, reject) => {
       User.findOne(
         {
@@ -59,7 +78,7 @@ class AuthController {
             try {
               const passMatch = await user.comparePassword(password);
               if (passMatch) {
-                const resp = this.generateResponse(user);
+                const resp = this.generateToken(user);
                 resolve(resp);
               } else {
                 reject(new Error('Invalid credentials.'));
