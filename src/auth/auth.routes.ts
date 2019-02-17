@@ -13,9 +13,9 @@ class Auth {
     this.router.post('/signup', async (req, res) => {
       try {
         const body = req.body;
-        const user = await Controller.signup(body);
+        const resp = await Controller.signup(body);
         res.status(200).json({
-          user
+          resp
         });
       } catch (error) {
         res.status(401).json({
@@ -27,13 +27,13 @@ class Auth {
     this.router.post('/login', async (req, res) => {
       try {
         const { email, password } = req.body;
-        const user = await Controller.login(email, password);
+        const resp = await Controller.login(email, password);
         res.status(200).json({
-          user
+          resp
         });
       } catch (error) {
         res.status(401).json({
-          error
+          error: error.message
         });
       }
     });
