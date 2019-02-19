@@ -23,7 +23,9 @@ class AuthController {
       token,
       user: {
         _id: user._id,
-        email: user.email
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName
       }
     };
   }
@@ -31,19 +33,25 @@ class AuthController {
   public async getUser(token: string): Promise<AuthResponse> {
     return new Promise<AuthResponse>((resolve, reject) => {
       const decodedToken: any = jwt.decode(token);
-      const id = decodedToken._id;
-      User.findById(id, (err, user) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({
-            user: {
-              _id: user._id,
-              email: user.email
-            }
-          });
-        }
-      });
+      if (decodedToken !== null) {
+        const id = decodedToken._id;
+        User.findById(id, (err, user) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({
+              user: {
+                _id: user._id,
+                email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName
+              }
+            });
+          }
+        });
+      } else {
+        reject(new Error('Invalid token.'));
+      }
     });
   }
 

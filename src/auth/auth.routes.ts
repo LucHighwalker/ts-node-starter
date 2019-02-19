@@ -13,12 +13,12 @@ class Auth {
     this.router.get('/user', async (req, res) => {
       try {
         const token = req.get('token');
-        const resp = await auth.getUser(token);
+        const user = await auth.getUser(token);
         res.status(200).json({
-          resp
+          user
         });
       } catch (error) {
-        res.status(400).json({
+        res.status(401).json({
           error: error.message
         });
       }
@@ -42,7 +42,7 @@ class Auth {
       try {
         const body = req.body;
         const resp = await auth.signup(body);
-        res.status(200).json({
+        res.status(201).json({
           resp
         });
       } catch (error) {
@@ -55,7 +55,7 @@ class Auth {
     this.router.get('/verify/resend', async (req, res) => {
       try {
         const token = req.get('token');
-        const sent = await auth.resendVerification(token)
+        const sent = await auth.resendVerification(token);
         res.status(200).json({
           sent
         });
@@ -70,7 +70,8 @@ class Auth {
       try {
         const { id, verifyCode } = req.params;
         const verified = await auth.verify(id, verifyCode);
-        res.status(200).json({
+        const status = verified === true ? 200 : 401;
+        res.status(status).json({
           verified
         });
       } catch (error) {
