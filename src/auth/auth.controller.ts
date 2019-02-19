@@ -47,6 +47,33 @@ class AuthController {
     });
   }
 
+  public async login(email: string, password: string): Promise<AuthResponse> {
+    return new Promise<AuthResponse>((resolve, reject) => {
+      User.findOne(
+        {
+          email
+        },
+        async (err: Error, user: IUserModel) => {
+          if (err) {
+            reject(err);
+          } else {
+            try {
+              const passMatch = await user.comparePassword(password);
+              if (passMatch) {
+                const resp = this.generateToken(user);
+                resolve(resp);
+              } else {
+                reject(new Error('Invalid credentials.'));
+              }
+            } catch (error) {
+              reject(error);
+            }
+          }
+        }
+      );
+    });
+  }
+
   public async signup(body: IUser): Promise<AuthResponse> {
     return new Promise<AuthResponse>((resolve, reject) => {
       const { email, password, firstName, lastName } = body;
@@ -93,30 +120,45 @@ class AuthController {
     });
   }
 
-  public async login(email: string, password: string): Promise<AuthResponse> {
-    return new Promise<AuthResponse>((resolve, reject) => {
-      User.findOne(
-        {
-          email
-        },
-        async (err: Error, user: IUserModel) => {
-          if (err) {
-            reject(err);
-          } else {
-            try {
-              const passMatch = await user.comparePassword(password);
-              if (passMatch) {
-                const resp = this.generateToken(user);
-                resolve(resp);
-              } else {
-                reject(new Error('Invalid credentials.'));
-              }
-            } catch (error) {
-              reject(error);
+  public async resendVerification(token: string): Promise<Boolean> {
+    return new Promise<Boolean>((resolve, reject) => {
+      const decodedToken: any = jwt.decode(token);
+      const id = decodedToken._id;
+      User.findById(id, (err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          const today = new Date();
+          user.verifyExp.setDate(today.getDate() + 1);
+          user.verifyCode = uniqid();
+          user.save((err, _) => {
+            if (err) {
+              reject(err);
+            } else {
+              const link = `${process.env.HOST_URL}/auth/verify/${user._id}/${
+                user.verifyCode
+              }`;
+              // TODO: Change emails
+              Mailer.sendEmail(
+                'example@example.com',
+                'email@luc.gg',
+                'test',
+                'emails/signup.hbs',
+                {
+                  name: user.firstName,
+                  link
+                }
+              )
+                .then(() => {
+                  resolve(true);
+                })
+                .catch(err => {
+                  reject(err);
+                });
             }
-          }
+          });
         }
-      );
+      });
     });
   }
 

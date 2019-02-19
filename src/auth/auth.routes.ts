@@ -24,6 +24,20 @@ class Auth {
       }
     });
 
+    this.router.post('/login', async (req, res) => {
+      try {
+        const { email, password } = req.body;
+        const resp = await auth.login(email, password);
+        res.status(200).json({
+          resp
+        });
+      } catch (error) {
+        res.status(401).json({
+          error: error.message
+        });
+      }
+    });
+
     this.router.post('/signup', async (req, res) => {
       try {
         const body = req.body;
@@ -38,15 +52,15 @@ class Auth {
       }
     });
 
-    this.router.post('/login', async (req, res) => {
+    this.router.get('/verify/resend', async (req, res) => {
       try {
-        const { email, password } = req.body;
-        const resp = await auth.login(email, password);
+        const token = req.get('token');
+        const sent = await auth.resendVerification(token)
         res.status(200).json({
-          resp
+          sent
         });
       } catch (error) {
-        res.status(401).json({
+        res.status(400).json({
           error: error.message
         });
       }
