@@ -25,6 +25,18 @@ export const UserSchema: Schema = new Schema({
   lastName: {
     type: String,
     required: true
+  },
+  verified: {
+    type: Boolean,
+    required: true
+  },
+  verifyCode: {
+    type: String,
+    required: true
+  },
+  verifyExp: {
+    type: Date,
+    required: true
   }
 });
 
@@ -53,7 +65,7 @@ UserSchema.pre('save', function(this: IUserModel, next: HookNextFunction) {
   }
 });
 
-UserSchema.methods.comparePassword = async function(
+UserSchema.methods.comparePassword = function(
   password: string
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {

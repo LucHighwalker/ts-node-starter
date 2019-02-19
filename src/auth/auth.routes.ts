@@ -51,6 +51,22 @@ class Auth {
         });
       }
     });
+
+    this.router.get('/verify/:id/:verifyCode', async (req, res) => {
+      try {
+        const { id, verifyCode } = req.params;
+        console.log(id)
+        console.log(verifyCode)
+        const isMatch = await auth.verify(id, verifyCode);
+        res.status(200).json({
+          isMatch
+        });
+      } catch (error) {
+        res.status(400).json({
+          error: error.message
+        });
+      }
+    });
   }
 }
 

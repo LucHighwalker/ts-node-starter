@@ -18,17 +18,23 @@ class Mailer {
     this.MailGunner = createTransport(mg(this.mgAuth));
   }
 
-  public sendEmail(): Promise<SentMessageInfo> {
+  public sendEmail(
+    from: string,
+    to: string,
+    subject: string,
+    template: string,
+    context: any = null
+  ): Promise<SentMessageInfo> {
     return new Promise<SentMessageInfo>((resolve, reject) => {
       this.MailGunner.sendMail(
         {
-          from: 'no-reply@example.com',
-          to: 'email@luc.gg', // An array if you have multiple recipients.
-          subject: 'test',
+          from,
+          to, // An array if you have multiple recipients.
+          subject,
           template: {
-            name: 'emails/email.hbs',
+            name: template,
             engine: 'handlebars',
-            context: null
+            context
           }
         },
         (err: Error, info: SentMessageInfo) => {
