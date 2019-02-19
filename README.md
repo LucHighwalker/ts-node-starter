@@ -16,3 +16,16 @@ tsc --watch
 nodemon ./dist/index.js
 // or whatever you use
 ```
+
+## ENV example
+
+```env
+HOST_URL='theurlyourserverison.com'
+PORT=4200
+
+MONGO_URL='mongoLocationURL'
+JWT_SECRET='averysecretsecret'
+
+MAILGUN_API_KEY='yourmailgunapikey'
+EMAIL_DOMAIN='mailgun.email.domain'
+```

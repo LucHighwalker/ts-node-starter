@@ -99,9 +99,9 @@ class AuthController {
           }`;
           // TODO: Change emails
           Mailer.sendEmail(
-            'example@example.com',
-            'email@luc.gg',
-            'test',
+            'no-reply@tsnode.com',
+            user.email,
+            'Welcome',
             'emails/signup.hbs',
             {
               name: user.firstName,
@@ -140,9 +140,9 @@ class AuthController {
               }`;
               // TODO: Change emails
               Mailer.sendEmail(
-                'example@example.com',
-                'email@luc.gg',
-                'test',
+                'no-reply@tsnode.com',
+                user.email,
+                'Verify Email',
                 'emails/signup.hbs',
                 {
                   name: user.firstName,
