@@ -31,12 +31,16 @@ export const UserSchema: Schema = new Schema({
     required: true
   },
   verifyCode: {
-    type: String,
-    required: true
+    type: String
   },
   verifyExp: {
-    type: Date,
-    required: true
+    type: Date
+  },
+  createdAt: {
+    type: Date
+  },
+  updatedAt: {
+    type: Date
   }
 });
 

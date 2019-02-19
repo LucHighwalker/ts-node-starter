@@ -6,7 +6,6 @@ import Mailer from '../mailer/mailer.controller';
 import User, { IUserModel } from '../models/user';
 import { IUser } from '../interfaces/user';
 import { AuthResponse } from '../interfaces/auth';
-import { resolve } from 'path';
 
 class AuthController {
   private generateToken(user: IUserModel): AuthResponse {
@@ -51,25 +50,26 @@ class AuthController {
   public async signup(body: IUser): Promise<AuthResponse> {
     return new Promise<AuthResponse>((resolve, reject) => {
       const { email, password, firstName, lastName } = body;
-      const verified = false;
-      const verifyCode = uniqid();
-      const verifyExp = new Date().getDate() + 1;
+      const verifyExp = new Date();
+      verifyExp.setDate(verifyExp.getDate() + 1);
+
       const newUser = new User({
         email,
         password,
         firstName,
         lastName,
-        verified,
-        verifyCode,
+        verified: false,
+        verifyCode: uniqid(),
         verifyExp
       });
+
       newUser.save((err: Error, user: IUserModel) => {
         if (err) {
           reject(err);
         } else {
-          const link = `http://localhost:4200/auth/verify/${
-            user._id
-          }/${verifyCode}`;
+          const link = `${process.env.HOST_URL}/auth/verify/${user._id}/${
+            user.verifyCode
+          }`;
           // TODO: Change emails
           Mailer.sendEmail(
             'example@example.com',
@@ -120,23 +120,33 @@ class AuthController {
     });
   }
 
-  public async verify(id: string, verifyCode: string): Promise<Boolean> {
-    return new Promise<Boolean>((resolve, reject) => {
+  public async verify(
+    id: string,
+    verifyCode: string
+  ): Promise<Boolean | String> {
+    return new Promise<Boolean | String>((resolve, reject) => {
       User.findById(id, (err, user) => {
         if (err) {
           reject(err);
         } else {
-          if (user.verifyCode === verifyCode) {
-            user.verified = true;
-            user.save((err, _) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(true);
-              }
-            });
+          const today = new Date();
+          if (user.verifyExp < today) {
+            resolve('Verification link expired.');
           } else {
-            resolve(false);
+            if (user.verifyCode === verifyCode) {
+              user.verified = true;
+              user.verifyCode = undefined;
+              user.verifyExp = undefined;
+              user.save((err, _) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(true);
+                }
+              });
+            } else {
+              resolve('Invalid verification link.');
+            }
           }
         }
       });

@@ -5,5 +5,5 @@ export interface IUser {
   lastName: string;
   verified: boolean;
   verifyCode: string;
-  verifyExp: number;
+  verifyExp: Date;
 }

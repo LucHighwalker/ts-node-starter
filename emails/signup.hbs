@@ -1,16 +1,25 @@
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-</head>
-<body>
-    <div class="container">
-        <p>Hello {{name}}
 
-          Please verify your email now. 
-          {{link}}
-        </p>
-    </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+
+<body>
+  <div class="container">
+    <p>Hello {{name}}</p>
+    <br>
+    <p>Thank you for signing up to that thing.</p>
+    <br>
+    <p>
+      Please <a href="{{link}}">click here</a> to verify your email now. This link will expire after 24 hours.
+    </p>
+    <br>
+    <p>Or copy and paste the following link in your browser:</p>
+    <br>
+    <p>{{link}}</p>
+  </div>
 </body>
+
 </html>
