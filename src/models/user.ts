@@ -11,12 +11,29 @@ export interface IUserModel extends IUser, Doc, Document {
 export const UserSchema: Schema = new Schema({
   email: {
     type: String,
+    unique: true,
     required: true,
-    unique: true
+    validate: {
+      validator: (email: string) =>
+        /^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/g.test(
+          email
+        ),
+      message: 'Invalid email.'
+    }
   },
   password: {
     type: String,
-    required: true
+    min: [6, 'Password too short.'],
+    max: [20, 'Password too long.'],
+    required: true,
+    validate: {
+      validator: (password: string) =>
+        /([A-Z]+){1,}([a-z]+){1,}([0-9]+){1,}([?!@#$%^&*()_\-+=/\\.,<>;:'"]){1,}/g.test(
+          password
+        ),
+      message:
+        'Password must contain an uppercase letter, lowercase letter, a number, and a symbol.'
+    }
   },
   firstName: {
     type: String,
