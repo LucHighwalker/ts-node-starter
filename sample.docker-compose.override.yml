@@ -1,0 +1,11 @@
+version: "2"
+services:
+  snapoo:
+    environment: 
+      - ENVIRONMENT=dev
+      - HOST_URL=domain.com
+      - PORT=4200
+      - MONGO_URI=mongodb://mongo:27017/zover
+      - JWT_SECRET=averysecretsecret
+      - MAILGUN_API_KEY=amailgunapi
+      - EMAIL_DOMAIN=email.domain.com

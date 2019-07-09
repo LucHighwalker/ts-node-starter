@@ -1,0 +1,57 @@
+version: "2"
+services:
+  zover:
+    container_name: zover
+    restart: always
+    build: .
+    ports:
+      - "4200:4200"
+    depends_on:
+      - mongo
+    links:
+      - mongo
+    environment:
+      - ENVIRONMENT=prod
+      - HOST_URL=domain.com
+      - PORT=4200
+      - MONGO_URI=mongodb://mongo:27017/zover
+      - JWT_SECRET=averysecretsecret
+      - MAILGUN_API_KEY=amailgunapi
+      - EMAIL_DOMAIN=email.domain.com
+      - WAIT_HOSTS=mongo:27017
+    volumes:
+      - "./src:/usr/src/app/src"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+  mongo:
+    container_name: mongo
+    image: mongo
+    volumes:
+      - /data/db
+    ports:
+      - "27017:27017"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    ports:
+      - 9000:9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1k"
+        max-file: "3"
+
+volumes:
+  portainer_data:

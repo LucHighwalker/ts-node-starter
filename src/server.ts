@@ -15,7 +15,7 @@ class Server {
   }
 
   private connectDb(): void {
-    const mongo = process.env.MONGO_URL;
+    const mongo = process.env.MONGO_URI;
     mongoose.connect(mongo, {
       useNewUrlParser: true,
       useCreateIndex: true

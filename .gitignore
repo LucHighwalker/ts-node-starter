@@ -15,7 +15,8 @@
 *.sig
 
 pkg/
-dist/
+
+docker-compose.override.yml
 
 ### VSCode ###
 .vscode
