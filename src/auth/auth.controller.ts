@@ -1,11 +1,11 @@
-import * as jwt from 'jsonwebtoken';
-import * as uniqid from 'uniqid';
+import * as jwt from "jsonwebtoken";
+import * as uniqid from "uniqid";
 
-import Mailer from '../mailer/mailer.controller';
+import Mailer from "../mailer/mailer.controller";
 
-import User, { IUserModel } from '../models/user';
-import { IUser } from '../interfaces/user';
-import { AuthResponse } from '../interfaces/auth';
+import User, { IUserModel } from "../models/user";
+import { IUser } from "../interfaces/user";
+import { AuthResponse } from "../interfaces/auth";
 
 class AuthController {
   private generateToken(user: IUserModel): AuthResponse {
@@ -15,7 +15,7 @@ class AuthController {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: '60 days'
+        expiresIn: "60 days"
       }
     );
 
@@ -50,7 +50,7 @@ class AuthController {
           }
         });
       } else {
-        reject(new Error('Invalid token.'));
+        reject(new Error("Invalid token."));
       }
     });
   }
@@ -71,7 +71,7 @@ class AuthController {
                 const resp = this.generateToken(user);
                 resolve(resp);
               } else {
-                reject(new Error('Invalid credentials.'));
+                reject(new Error("Invalid credentials."));
               }
             } catch (error) {
               reject(error);
@@ -107,10 +107,10 @@ class AuthController {
           }`;
           // TODO: Change emails
           Mailer.sendEmail(
-            'no-reply@tsnode.com',
+            "no-reply@zover.com",
             user.email,
-            'Welcome',
-            'emails/signup.hbs',
+            "Welcome",
+            "emails/signup.hbs",
             {
               name: user.firstName,
               link
@@ -148,10 +148,10 @@ class AuthController {
               }`;
               // TODO: Change emails
               Mailer.sendEmail(
-                'no-reply@tsnode.com',
+                "no-reply@tsnode.com",
                 user.email,
-                'Verify Email',
-                'emails/signup.hbs',
+                "Verify Email",
+                "emails/signup.hbs",
                 {
                   name: user.firstName,
                   link
@@ -181,7 +181,7 @@ class AuthController {
         } else {
           const today = new Date();
           if (user.verifyExp < today) {
-            resolve('Verification link expired.');
+            resolve("Verification link expired.");
           } else {
             if (user.verifyCode === verifyCode) {
               user.verified = true;
@@ -195,13 +195,27 @@ class AuthController {
                 }
               });
             } else {
-              resolve('Invalid verification link.');
+              resolve("Invalid verification link.");
             }
           }
         }
       });
     });
   }
+
+  public authenticate = (req: any, _: any, next: Function) => {
+    const token = req.get("token") ? req.get("token") : null;
+    if (token === null) {
+      req.user = null;
+    } else {
+      const decodedToken: any = jwt.decode(token, { complete: true }) || {
+        payload: null
+      };
+      req.user = decodedToken.payload;
+    }
+
+    next();
+  };
 }
 
 export default new AuthController();
