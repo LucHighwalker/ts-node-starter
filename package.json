@@ -1,5 +1,5 @@
 {
-  "name": "ts-node",
+  "name": "zover-backend",
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -20,6 +20,7 @@
     "mongoose": "^5.4.13",
     "nodemailer": "^5.1.1",
     "nodemailer-mailgun-transport": "^1.4.0",
+    "ts-node": "^8.3.0",
     "uniqid": "^5.0.3"
   },
   "devDependencies": {
