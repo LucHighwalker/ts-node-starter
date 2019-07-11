@@ -27,9 +27,9 @@ class Auth {
     this.router.post('/login', async (req, res) => {
       try {
         const { email, password } = req.body;
-        const resp = await auth.login(email, password);
+        const login = await auth.login(email, password);
         res.status(200).json({
-          resp
+          login
         });
       } catch (error) {
         res.status(401).json({
@@ -41,9 +41,9 @@ class Auth {
     this.router.post('/signup', async (req, res) => {
       try {
         const body = req.body;
-        const resp = await auth.signup(body);
-        res.status(201).json({
-          resp
+        const signup = await auth.signup(body);
+        res.status(200).json({
+          signup
         });
       } catch (error) {
         res.status(400).json({
@@ -55,9 +55,9 @@ class Auth {
     this.router.get('/verify/resend', async (req, res) => {
       try {
         const token = req.get('token');
-        const sent = await auth.resendVerification(token);
+        await auth.resendVerification(token);
         res.status(200).json({
-          sent
+          sent: true
         });
       } catch (error) {
         res.status(400).json({
