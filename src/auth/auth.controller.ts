@@ -117,34 +117,20 @@ class AuthController {
 	public async verify(
 		id: string,
 		verifyCode: string
-	): Promise<Boolean | String> {
-		return new Promise<Boolean | String>((resolve, reject) => {
-			User.findById(id, (err, user) => {
-				if (err) {
-					reject(err);
-				} else {
-					const today = new Date();
-					if (user.verifyExp < today) {
-						resolve("Verification link expired.");
-					} else {
-						if (user.verifyCode === verifyCode) {
-							user.verified = true;
-							user.verifyCode = undefined;
-							user.verifyExp = undefined;
-							user.save((err, _) => {
-								if (err) {
-									reject(err);
-								} else {
-									resolve(true);
-								}
-							});
-						} else {
-							resolve("Invalid verification link.");
-						}
-					}
-				}
-			});
-		});
+	): Promise<void> {
+		const user = await User.findById(id);
+		const today = new Date();
+		
+		if (user.verifyExp < today) {
+			throw new Error("Verification link expired.");
+		} else if (user.verifyCode !== verifyCode) {
+			throw new Error("Invalid verification link.");
+		} else {
+			user.verified = true;
+			user.verifyCode = undefined;
+			user.verifyExp = undefined;
+			await user.save();
+		}
 	}
 
 	public authenticate = (req: any, _: any, next: Function) => {

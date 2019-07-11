@@ -27,10 +27,15 @@ export const UserSchema: Schema = new Schema({
 		max: [20, "Password too long."],
 		required: true,
 		validate: [
-			(password: string) =>
-				/([A-Z]+){1,}([a-z]+){1,}([0-9]+){1,}([?!@#$%^&*()_\-+=/\\.,<>;:'"]){1,}/g.test(
-					password
-				),
+			function(password: string) {
+				if (!this.isModified("password")) {
+					return true;
+				} else {
+					return /([A-Z]+){1,}([a-z]+){1,}([0-9]+){1,}([?!@#$%^&*()_\-+=/\\.,<>;:'"]){1,}/g.test(
+						password
+					);
+				}
+			},
 			"Password must contain an uppercase letter, lowercase letter, a number, and a symbol."
 		]
 	},
@@ -85,18 +90,10 @@ UserSchema.pre("save", function(this: IUserModel, next: HookNextFunction) {
 	}
 });
 
-UserSchema.methods.comparePassword = function(
+UserSchema.methods.comparePassword = async function(
 	password: string
 ): Promise<boolean> {
-	return new Promise<boolean>((resolve, reject) => {
-		compare(password, this.password, (err: Error, isMatch: boolean) => {
-			if (err) {
-				reject(err);
-			} else {
-				resolve(isMatch);
-			}
-		});
-	});
+	return await compare(password, this.password);
 };
 
 const UserModel: Model<IUserModel> = model<IUserModel>("User", UserSchema);

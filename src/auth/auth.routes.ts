@@ -69,10 +69,9 @@ class Auth {
     this.router.get('/verify/:id/:verifyCode', async (req, res) => {
       try {
         const { id, verifyCode } = req.params;
-        const verified = await auth.verify(id, verifyCode);
-        const status = verified === true ? 200 : 401;
-        res.status(status).json({
-          verified
+        await auth.verify(id, verifyCode);
+        res.status(200).json({
+          verified: true
         });
       } catch (error) {
         res.status(400).json({
