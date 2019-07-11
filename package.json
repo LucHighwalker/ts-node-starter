@@ -1,6 +1,6 @@
 {
-  "name": "zover-backend",
-  "version": "1.0.0",
+  "name": "ts-node-starter",
+  "version": "1.5.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
@@ -22,7 +22,9 @@
     "nodemailer-mailgun-transport": "^1.4.0",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3",
-    "uniqid": "^5.0.3",
+    "uniqid": "^5.0.3"
+  }, 
+  "devDependencies": {
     "@sentry/node": "^5.1.0",
     "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.17.0",

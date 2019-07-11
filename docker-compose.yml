@@ -14,7 +14,7 @@ services:
       - ENVIRONMENT=prod
       - HOST_URL=domain.com
       - PORT=4200
-      - MONGO_URI=mongodb://mongo:27017/zover
+      - MONGO_URI=mongodb://mongo:27017/yourapp
       - JWT_SECRET=averysecretsecret
       - MAILGUN_API_KEY=amailgunapi
       - EMAIL_DOMAIN=email.domain.com
