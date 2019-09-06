@@ -2,6 +2,7 @@ import * as express from "express";
 import * as mongoose from "mongoose";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
+import * as expressSanitizer from 'express-sanitizer';
 
 import auth from "./auth/auth.controller";
 
@@ -28,6 +29,7 @@ class Server {
   }
 
   private applyMiddleware(): void {
+    this.server.use(expressSanitizer());
     this.server.use(bodyParser.json());
     this.server.use(bodyParser.urlencoded({ extended: true }));
     this.server.use(auth.authenticate);
